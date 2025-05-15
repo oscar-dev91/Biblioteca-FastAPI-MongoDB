@@ -6,7 +6,8 @@ import os
 
 load_dotenv()
 
-URI = os.getenv("URI")
+# URI = os.getenv("URI")
+URI = os.environ.get('URI')
 
 # Create a new client and connect to the server
 client = AsyncIOMotorClient(URI)
