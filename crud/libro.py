@@ -5,6 +5,19 @@ from schemas.libro import LibroCreate
 import re
 
 async def crear_libro(libro_data: LibroCreate, engine: AIOEngine):
+    """
+    Crea un nuevo libro en el sistema.
+
+    Registra un nuevo elemento de tipo "Libro" en la base de datos, incluyendo su información
+    general y los detalles específicos del libro.
+
+    Parámetros:
+    - libro_data (LibroCreate): Datos del libro a crear.
+    - engine (AIOEngine): Instancia del motor de base de datos ODMantic.
+
+    Retorna:
+    - Libro: Objeto del libro creado.
+    """
     elemento = ElementoBiblioteca(
         titulo=libro_data.titulo,
         autor=libro_data.autor,
@@ -24,9 +37,28 @@ async def crear_libro(libro_data: LibroCreate, engine: AIOEngine):
     return libro
 
 async def listar_libros(engine: AIOEngine):
+    """
+    Lista todos los libros registrados en el sistema.
+
+    Parámetros:
+    - engine (AIOEngine): Instancia del motor de base de datos ODMantic.
+
+    Retorna:
+    - List[Libro]: Lista de libros encontrados.
+    """
     return await engine.find(Libro)
 
 async def buscar_por_titulo(titulo: str, engine: AIOEngine):
+    """
+    Busca libros por título utilizando coincidencias parciales y sin distinguir mayúsculas.
+
+    Parámetros:
+    - titulo (str): Título o fragmento del título del libro.
+    - engine (AIOEngine): Instancia del motor de base de datos ODMantic.
+
+    Retorna:
+    - List[Libro]: Libros coincidentes.
+    """
     regex = re.compile(f".*{re.escape(titulo)}.*", re.IGNORECASE)
     elementos = await engine.find(ElementoBiblioteca, {'titulo': {"$regex": regex}})
 
@@ -41,10 +73,44 @@ async def buscar_por_titulo(titulo: str, engine: AIOEngine):
     return libros
 
 async def buscar_por_isbn(isbn: str, engine: AIOEngine):
+    """
+    Busca un libro específico por su ISBN.
+
+    Parámetros:
+    - isbn (str): Código ISBN del libro.
+    - engine (AIOEngine): Instancia del motor de base de datos ODMantic.
+
+    Retorna:
+    - Libro | None: Libro encontrado o None si no existe.
+    """
     return await engine.find_one(Libro, Libro.isbn == isbn)
 
-async def actualizar_libro_por_isbn(isbn: str, libro_data: LibroCreate, engine: AIOEngine):
-    libro = await buscar_por_isbn(isbn, engine)
+async def buscar_por_id(libro_id: str, engine: AIOEngine):
+    """
+    Busca un libro específico por su ID.
+
+    Parámetros:
+    - libro_id (str): Identificador único del libro.
+    - engine (AIOEngine): Instancia del motor de base de datos ODMantic.
+
+    Retorna:
+    - Libro | None: Libro encontrado o None si no existe.
+    """
+    return await engine.find_one(Libro, Libro.id == libro_id)
+
+async def actualizar_libro_por_id(libro_id: str, libro_data: LibroCreate, engine: AIOEngine):
+    """
+    Actualiza los datos de un libro existente usando su ID.
+
+    Parámetros:
+    - libro_id (str): ID del libro a actualizar.
+    - libro_data (LibroCreate): Nuevos datos del libro.
+    - engine (AIOEngine): Instancia del motor de base de datos ODMantic.
+
+    Retorna:
+    - Libro | None: Libro actualizado o None si no se encontró.
+    """
+    libro = await buscar_por_id(libro_id, engine)
     if not libro:
         return None
 
@@ -61,8 +127,18 @@ async def actualizar_libro_por_isbn(isbn: str, libro_data: LibroCreate, engine: 
 
     return libro
 
-async def eliminar_libro_por_isbn(isbn: str, engine: AIOEngine):
-    libro = await buscar_por_isbn(isbn, engine)
+async def eliminar_libro_por_id(libro_id: str, engine: AIOEngine):
+    """
+    Elimina un libro del sistema junto con su información relacionada como elemento.
+
+    Parámetros:
+    - libro_id (str): ID del libro a eliminar.
+    - engine (AIOEngine): Instancia del motor de base de datos ODMantic.
+
+    Retorna:
+    - bool: True si fue eliminado exitosamente, False si no se encontró.
+    """
+    libro = await buscar_por_id(libro_id, engine)
     if not libro:
         return False
     await engine.delete(libro)
