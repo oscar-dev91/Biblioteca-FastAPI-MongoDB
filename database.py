@@ -1,13 +1,9 @@
 
 from odmantic import AIOEngine
 from motor.motor_asyncio import AsyncIOMotorClient
-from dotenv import load_dotenv
 import os
 
-# load_dotenv()
-
-# URI = os.getenv("URI")
-URI = os.environ.get('URI')
+URI = os.getenv('URI')
 if URI is None:
     raise ValueError('La variable de entorno URI no está definida')
 # Create a new client and connect to the server
