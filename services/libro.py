@@ -9,7 +9,10 @@ async def listar_libros_service():
     return await crud_libro.listar_libros(engine)
 
 async def buscar_libro_por_titulo_service(titulo: str):
-    return await crud_libro.buscar_por_titulo(titulo, engine)
+    libros = await crud_libro.buscar_por_titulo(titulo, engine)
+    if not libros:
+        raise ValueError('No se encontraron libros con ese título')
+    return libros
 
 async def buscar_libro_por_isbn_service(isbn: str):
     return await crud_libro.buscar_por_isbn(isbn, engine)

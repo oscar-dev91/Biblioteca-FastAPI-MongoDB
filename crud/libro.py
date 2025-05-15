@@ -2,6 +2,7 @@ from odmantic import AIOEngine
 from models.elemento import ElementoBiblioteca
 from models.libro import Libro
 from schemas.libro import LibroCreate
+import re
 
 async def crear_libro(libro_data: LibroCreate, engine: AIOEngine):
     elemento = ElementoBiblioteca(
@@ -26,7 +27,18 @@ async def listar_libros(engine: AIOEngine):
     return await engine.find(Libro)
 
 async def buscar_por_titulo(titulo: str, engine: AIOEngine):
-    return await engine.find(Libro, Libro.elemento.titulo == titulo)
+    regex = re.compile(f".*{re.escape(titulo)}.*", re.IGNORECASE)
+    elementos = await engine.find(ElementoBiblioteca, {'titulo': {"$regex": regex}})
+
+    if not elementos:
+        return []
+
+    # Extraer IDs de los elementos encontrados
+    elemento_ids = [elemento.id for elemento in elementos]
+
+    # Buscar libros que referencian esos elementos
+    libros = await engine.find(Libro, Libro.elemento.in_(elemento_ids))
+    return libros
 
 async def buscar_por_isbn(isbn: str, engine: AIOEngine):
     return await engine.find_one(Libro, Libro.isbn == isbn)
