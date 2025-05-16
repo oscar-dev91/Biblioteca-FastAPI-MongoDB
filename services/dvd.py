@@ -96,7 +96,7 @@ Errores:
         raise ValueError('No se encontró el DVD')
     return await crud_dvd.actualizar_por_id(id, dvd_data, engine)
 
-async def eliminar_id_por_id_service(id: str):
+async def eliminar_por_id_service(id: str):
     """
 Elimina un DVD por su ID.
 

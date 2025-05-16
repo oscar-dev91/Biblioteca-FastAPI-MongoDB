@@ -50,3 +50,34 @@ Atributos:
 
     class Config:
         from_attributes = True
+        
+    @classmethod
+    def from_model(cls, libro):
+        """
+    Crea una instancia del esquema `LibroOut` a partir de un modelo de dominio completo.
+
+    Este método de clase permite transformar un objeto de base de datos (por ejemplo, un documento
+    de MongoDB u ORM) en una instancia del esquema de salida `LibroOut`, extrayendo tanto los
+    atributos del propio objeto como los del objeto anidado `elemento`.
+
+    Parámetros:
+    - libro (Any): Objeto que representa un libro en el sistema, que incluye un atributo `elemento`
+    - con los datos compartidos del recurso de biblioteca (título, autor, etc.).
+
+    Retorna:
+    - LibroOut: Instancia del esquema Pydantic con todos los campos listos para ser devueltos en la API.
+    
+    Ejemplo:
+    - libro = await libro_service.obtener_libro()
+    - libro_out = LibroOut.from_model(libro)
+    """
+        return cls(
+            id=str(libro.id),
+            titulo=libro.elemento.titulo,
+            autor=libro.elemento.autor,
+            ano_publicacion=libro.elemento.ano_publicacion,
+            isbn=libro.isbn,
+            numero_paginas=libro.numero_paginas,
+            genero=libro.genero,
+            editorial=libro.editorial
+        )

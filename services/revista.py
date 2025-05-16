@@ -57,7 +57,7 @@ Errores:
 
     revistas = await crud_revista.buscar_por_titulo(titulo, engine)
     if not revistas:
-        return ValueError('No se encontraron revistas con ese titulo')
+        raise ValueError('No se encontraron revistas con ese titulo')
     return revistas
 
 async def buscar_revista_por_categoria_service(categoria: str):
@@ -76,7 +76,7 @@ Errores:
 
     revistas = await crud_revista.buscar_por_categoria(categoria, engine)
     if not revistas:
-        return ValueError('No se encontraron revistas con esa categoría')
+        raise ValueError('No se encontraron revistas con esa categoría')
     return revistas
 
 async def actualizar_revista_por_id_service(id: str, revista_data: RevistaCreate):
