@@ -49,7 +49,7 @@ async def listar_dvds():
         ) for dvd in dvds
     ]
     
-@router.get('/buscar/titulo/{titulo}', response_model=DVDOut)
+@router.get('/buscar/titulo/{titulo}', response_model=list[DVDOut])
 async def buscar_por_titulo(titulo: str):
     """
     🔍 **Buscar DVD por título**
@@ -76,8 +76,8 @@ async def buscar_por_titulo(titulo: str):
         ) for dvd in dvds
     ]
     
-@router.get('/buscar/categoria/{categoria}}', response_model=DVDOut)
-async def buscar_por_categoria(categoria: str):
+@router.get('/buscar/genero/{genero}', response_model=list[DVDOut])
+async def buscar_por_genero(genero: str):
     """
     🗃️ **Buscar DVD por categoría**
 
@@ -89,7 +89,7 @@ async def buscar_por_categoria(categoria: str):
     **Retorna:**
     - `list[DVDOut]`: DVDs encontrados en esa categoría.
     """
-    dvds = await dvd_service.buscar_dvd_por_categoria_service(categoria)
+    dvds = await dvd_service.buscar_dvd_por_genero_service(genero)
     if not dvds:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="DVDs no encontrado")
     return [

@@ -1,7 +1,10 @@
 
 from odmantic import AIOEngine
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 URI = os.getenv('URI')
 if URI is None:

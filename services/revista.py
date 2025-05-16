@@ -36,7 +36,7 @@ Retorna:
 Errores:
 - ValueError: Si no se encuentra la revista.
 """
-    revista = crud_revista.buscar_por_id(id, engine)
+    revista = await crud_revista.buscar_por_id(id, engine)
     if not revista:
         raise ValueError('No se encontró esta revista')
     return revista

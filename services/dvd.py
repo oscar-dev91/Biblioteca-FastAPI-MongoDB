@@ -59,7 +59,7 @@ Errores:
         raise ValueError('No se encontraron DVDs con ese título')
     return dvds
 
-async def buscar_dvd_por_categoria_service(categoria: str):
+async def buscar_dvd_por_genero_service(categoria: str):
     """
 Busca DVDs por su categoría.
 
@@ -72,9 +72,9 @@ Retorna:
 Errores:
 - ValueError: Si no se encuentran DVDs con esa categoría.
 """
-    dvds = await crud_dvd.buscar_por_categoria(categoria, engine)
+    dvds = await crud_dvd.buscar_por_genero(categoria, engine)
     if not dvds:
-        raise ValueError('No se encontraron DVDs con esa categoría')
+        raise ValueError('No se encontraron DVDs con ese genero')
     return dvds
 
 async def actualizar_dvd_por_id_service(id: str, dvd_data: DVDCreate):

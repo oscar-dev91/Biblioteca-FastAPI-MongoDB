@@ -2,6 +2,7 @@ from odmantic import AIOEngine
 from models.elemento import ElementoBiblioteca
 from models.libro import Libro
 from schemas.libro import LibroCreate
+from bson import ObjectId
 import re
 
 async def crear_libro(libro_data: LibroCreate, engine: AIOEngine):
@@ -96,7 +97,7 @@ async def buscar_por_id(libro_id: str, engine: AIOEngine):
     Retorna:
     - Libro | None: Libro encontrado o None si no existe.
     """
-    return await engine.find_one(Libro, Libro.id == libro_id)
+    return await engine.find_one(Libro, Libro.id == ObjectId(libro_id))
 
 async def actualizar_libro_por_id(libro_id: str, libro_data: LibroCreate, engine: AIOEngine):
     """

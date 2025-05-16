@@ -2,6 +2,7 @@ from odmantic import AIOEngine
 from models.elemento import ElementoBiblioteca
 from models.revista import Revista
 from schemas.revista import RevistaCreate
+from bson import ObjectId
 import re
 
 async def crear_revista(revista_data: RevistaCreate, engine: AIOEngine):
@@ -76,11 +77,10 @@ async def buscar_por_categoria(categoria: str, engine: AIOEngine):
     - List[Revista]: Lista de revistas que coinciden.
     """
     regex = re.compile(f".*{re.escape(categoria)}.*", re.IGNORECASE)
-    elementos = await engine.find(ElementoBiblioteca, {'categoria': {"$regex": regex}})
-    if not elementos:
+    revistas = await engine.find(Revista, {'categoria': {"$regex": regex}})
+    if not revistas:
         return []
-    elementos_ids = [elemento.id for elemento in elementos]
-    revistas = await engine.find(Revista, Revista.elemento.in_(elementos_ids))
+    
     return revistas
 
 async def buscar_por_id(revista_id: str, engine: AIOEngine):
@@ -94,7 +94,7 @@ async def buscar_por_id(revista_id: str, engine: AIOEngine):
     Retorna:
     - Revista | None: Revista encontrada o None.
     """
-    return await engine.find_one(Revista, Revista.id == revista_id)
+    return await engine.find_one(Revista, Revista.id == ObjectId(revista_id))
 
 async def actualizar_por_id(revista_id: str, revista_data: RevistaCreate, engine: AIOEngine):
     """

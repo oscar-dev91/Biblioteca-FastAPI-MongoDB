@@ -2,6 +2,7 @@ from odmantic import AIOEngine
 from models.elemento import ElementoBiblioteca
 from models.dvd import DVD
 from schemas.dvd import DVDCreate
+from bson import ObjectId
 import re
 
 async def crear_dvd(dvd_data: DVDCreate, engine: AIOEngine):
@@ -28,7 +29,7 @@ async def crear_dvd(dvd_data: DVDCreate, engine: AIOEngine):
     dvd = DVD(
         elemento= elemento,
         duracion= dvd_data.duracion,
-        genero= dvd_data.duracion
+        genero= dvd_data.genero
     ) # type: ignore
     await engine.save(dvd)
     return dvd
@@ -61,12 +62,12 @@ async def buscar_por_titulo(titulo: str, engine: AIOEngine):
     if not elementos:
         return []
     #Extrayendo los ids de los elementos encontrados
-    elemento_ids = [elemento.id for elemento in elementos]
+    elemento_ids = [ObjectId(elemento.id) for elemento in elementos]
     # Buscando DVDs de los elementos encontrados
     dvds = await engine.find(DVD, DVD.elemento.in_(elemento_ids))
     return dvds
 
-async def buscar_por_categoria(categoria: str, engine: AIOEngine):
+async def buscar_por_genero(categoria: str, engine: AIOEngine):
     """
     Busca DVDs por categoría.
 
@@ -78,12 +79,10 @@ async def buscar_por_categoria(categoria: str, engine: AIOEngine):
     - List[DVD]: DVDs relacionados a la categoría.
     """
     regex = re.compile(f".*{re.escape(categoria)}.*", re.IGNORECASE)
-    elementos = await engine.find(ElementoBiblioteca, {'categoria': {'$regex': regex}})
+    elementos = await engine.find(DVD, {'genero': {'$regex': regex}})
     if not elementos:
         return []
-    elementos_ids = [elemento.id for elemento in elementos]
-    dvds = await engine.find(DVD, DVD.elemento.in_(elementos_ids))
-    return dvds
+    return elementos
 
 async def buscar_por_id(dvd_id: str, engine: AIOEngine):
     """
@@ -96,7 +95,7 @@ async def buscar_por_id(dvd_id: str, engine: AIOEngine):
     Retorna:
     - DVD | None: DVD encontrado o None.
     """
-    return await engine.find_one(DVD, DVD.id == dvd_id)
+    return await engine.find_one(DVD, DVD.id == ObjectId(dvd_id))
 
 async def actualizar_por_id(dvd_id, dvd_data: DVDCreate, engine: AIOEngine):
     """

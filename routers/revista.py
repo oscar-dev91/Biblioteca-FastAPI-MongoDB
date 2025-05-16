@@ -17,7 +17,7 @@ async def crear_revista(revista: RevistaCreate):
     **Retorna:**
     - `RevistaOut`: Revista creada.
     """
-    revista_creada = revista_service.crear_revista_service(revista)
+    revista_creada = await revista_service.crear_revista_service(revista)
     return RevistaOut.from_model(revista_creada)
 
 @router.get('/', response_model=list[RevistaOut])
